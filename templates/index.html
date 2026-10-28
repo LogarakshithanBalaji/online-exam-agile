@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Exam - Version 1</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <header>
+            <h1>Online Exam System</h1>
+            <p>Version 1 — MCQ Quiz</p>
+        </header>
+
+        <form id="quizForm">
+            {% for q in questions %}
+            <section class="question-card">
+                <h3>{{ loop.index }}. {{ q.question }}</h3>
+                {% for option in q.options %}
+                <label class="option">
+                    <input type="radio" name="q{{ q.id }}" value="{{ option }}" required>
+                    <span>{{ option }}</span>
+                </label>
+                {% endfor %}
+            </section>
+            {% endfor %}
+
+            <button type="submit" id="submitBtn">Submit Quiz</button>
+        </form>
+
+        <p id="message" role="status" aria-live="polite"></p>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
