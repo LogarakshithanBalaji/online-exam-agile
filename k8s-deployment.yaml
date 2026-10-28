@@ -1,0 +1,28 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: online-exam
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: online-exam
+  template:
+    metadata:
+      labels:
+        app: online-exam
+    spec:
+      containers:
+        - name: online-exam
+          image: logarakshithan/online-exam:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "384Mi"
+              cpu: "500m"

@@ -7,33 +7,49 @@ QUESTIONS = [
     {
         "id": 1,
         "question": "Which language is used to create web page structure?",
-        "options": ["Python", "HTML", "SQL", "C++"]
+        "options": ["Python", "HTML", "SQL", "C++"],
+        "correct_answer": "HTML"
     },
     {
         "id": 2,
         "question": "Which of these is a Python data type?",
-        "options": ["integer", "browser", "keyboard", "monitor"]
+        "options": ["integer", "browser", "keyboard", "monitor"],
+        "correct_answer": "integer"
     },
     {
         "id": 3,
         "question": "Which tag is used for the largest HTML heading?",
-        "options": ["<h6>", "<head>", "<h1>", "<p>"]
+        "options": ["<h6>", "<head>", "<h1>", "<p>"],
+        "correct_answer": "<h1>"
     },
     {
         "id": 4,
         "question": "Which language is commonly used to style web pages?",
-        "options": ["CSS", "SQL", "C", "Bash"]
+        "options": ["CSS", "SQL", "C", "Bash"],
+        "correct_answer": "CSS"
     },
     {
         "id": 5,
         "question": "Which keyword defines a function in Python?",
-        "options": ["function", "define", "func", "def"]
+        "options": ["function", "define", "func", "def"],
+        "correct_answer": "def"
     }
 ]
 
+
 @app.route("/")
 def home():
-    return render_template("index.html", questions=QUESTIONS)
+    # Do not expose correct answers to the browser.
+    public_questions = [
+        {
+            "id": q["id"],
+            "question": q["question"],
+            "options": q["options"]
+        }
+        for q in QUESTIONS
+    ]
+    return render_template("index.html", questions=public_questions)
+
 
 @app.route("/submit", methods=["POST"])
 def submit():
@@ -56,14 +72,32 @@ def submit():
     }
 
     for question_id, answer in answers.items():
-        if not isinstance(answer, str) or answer not in allowed_options[question_id]:
+        if (
+            not isinstance(answer, str)
+            or answer not in allowed_options[question_id]
+        ):
             return jsonify({"error": "Invalid answer option"}), 400
+
+    # Calculate the score on the server.
+    correct_answers = {
+        str(q["id"]): q["correct_answer"] for q in QUESTIONS
+    }
+
+    score = sum(
+        1
+        for question_id, answer in answers.items()
+        if answer == correct_answers[question_id]
+    )
+
+    total_questions = len(QUESTIONS)
 
     return jsonify({
         "message": "Your quiz has been submitted successfully.",
-        "submitted": True
+        "submitted": True,
+        "score": score,
+        "total": total_questions
     })
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
-

@@ -1,3 +1,4 @@
+
 const quizForm = document.getElementById("quizForm");
 const message = document.getElementById("message");
 const submitBtn = document.getElementById("submitBtn");
@@ -33,10 +34,14 @@ quizForm.addEventListener("submit", async function (event) {
             throw new Error(result.error || "Submission failed.");
         }
 
-        message.textContent = result.message;
+        // Display the automatically calculated score.
+        message.textContent =
+            `${result.message} Your score: ${result.score} out of ${result.total}.`;
+
         quizForm.querySelectorAll("input").forEach(input => {
             input.disabled = true;
         });
+
         submitBtn.textContent = "Quiz Submitted";
     } catch (error) {
         message.textContent = error.message;
